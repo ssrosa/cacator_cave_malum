@@ -14,7 +14,9 @@ from sklearn.externals.six import StringIO
 from IPython.display import Image  
 from sklearn.tree import export_graphviz
 
-def keyword_matrix(orig_categories, keywords):
+#########################################################
+# DATA CLEANING #########################################
+def keyword_matrix(pysqldf, orig_categories, keywords):
     
     '''
     A tool for exploring the incidence of certain key words within 
@@ -31,6 +33,8 @@ def keyword_matrix(orig_categories, keywords):
     
     Parameters:
     
+    pysqldf ()
+
     orig_categories (list.) The categories in the data set to traverse.
     Each should correspond to a category/class in the data set.
     
@@ -81,9 +85,6 @@ def keyword_matrix(orig_categories, keywords):
     keywords_df.drop(['index'], axis = 1, inplace = True)
     return keywords_df
 
-    #Fill values in a column conditionally
-#Words sought can be a list or a single value
-#Exact match or just 'appears in' can be specified
 def write(df, words_sought, read_from, write_to, phrase, exact = False):
     '''
     A tool for changing the values of certain cells in a DataFrame under
@@ -129,8 +130,8 @@ def write(df, words_sought, read_from, write_to, phrase, exact = False):
                 #Write the new phrase to the other given column
                 df.at[index, write_to] = phrase
 
-
-#Example function to visualize a confusion matrix without yellow brick
+###########################################################
+# CONFUSION MATRIX ########################################
 def plot_conf_matrix(cm, classes, normalize=False, 
                           title='Confusion Matrix', cmap=plt.cm.Blues):
 #    if normalize:
@@ -157,6 +158,8 @@ def plot_conf_matrix(cm, classes, normalize=False,
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
 
+###########################################################
+# DECISION TREE ###########################################
 def draw_graph(clf):
     '''
     Visualizes a decision tree using GraphViz.
@@ -181,3 +184,93 @@ def draw_graph(clf):
     
     #Draw image
     return image
+
+###########################################################
+# HYPERPARAMETERS #########################################
+def hyper(df, param, to_set, X_train, X_test, y_train, y_test):
+    '''
+    A tool to 
+    '''
+    #Instantiate a classifier with all default hyperparameters 
+    #except whatever was passed  
+    clf = DecisionTreeClassifier(
+            criterion = param if to_set == 'criterion' else 'entropy',
+            max_depth = param if to_set == 'depth' else None,
+            min_samples_split = param if to_set == 'samples_split' else 2,
+            min_samples_leaf = param if to_set == 'samples_leaf' else 1,
+            max_features = param if to_set == 'features' else None,
+            max_leaf_nodes = param if to_set == 'leaf_nodes' else None,
+            min_impurity_decrease = param if to_set == 'impurity_decrease'  else 0
+                                 )
+    #Fit the data to the classifier
+    clf.fit(X_train,y_train) 
+    #Predict values for training data
+    y_hat_train = clf.predict(X_train)
+    #Predict values for testing data
+    y_hat_test = clf.predict(X_test)
+
+    #Get the scores
+    prec_train = precision_score(y_train, y_hat_train, average = None).mean()
+    prec_test = precision_score(y_test, y_hat_test, average = None).mean()
+    recall_train = recall_score(y_train, y_hat_train, average = None).mean()
+    recall_test =  recall_score(y_test, y_hat_test, average = None).mean()
+    f1_train = f1_score(y_train, y_hat_train, average = None).mean()
+    f1_test = f1_score(y_test, y_hat_test, average = None).mean()
+    
+    #Write the scores to the df
+    df = df.append({'param_values': param,
+               'prec_train': prec_train,
+               'prec_test': prec_test,
+               'recall_train': recall_train,
+               'recall_test': recall_test,
+               'f1_train': f1_train,
+               'f1_test': f1_test              
+              }, ignore_index = True)
+    
+    return df
+
+def compare_hypers(params, to_set, X_train, X_test, y_train, y_test):
+    '''
+    A tool to
+    '''
+    score_columns = ['param_values', 'prec_train', 'prec_test', 
+                     'recall_train', 'recall_test', 'f1_train', 'f1_test']
+    
+    #Instantiate adf to use for storing scores
+    df = pd.DataFrame(columns = score_columns)
+    
+    #Run a model for each parameter and record
+    #its scores in the df
+    for param in params:
+        df = hyper(df, param, to_set, X_train, X_test, y_train, y_test)
+    #Return the df with the scores from all the models
+    return df
+
+def plot_hypers(df, title):
+    '''
+    A tool to
+    
+    '''
+    # Number of iterations to plot along the x axis
+    x = df['param_values']
+   # tick_marks = np.arange(x.shape[0])
+    #Draw a figure
+    plt.figure(figsize=(10,6))
+    
+    plt.plot(x, df['prec_train'], 'b-', label = 'Training precision')
+    plt.plot(x, df['prec_test'], 'b:', label = 'Test precision')
+    plt.plot(x, df['recall_train'], 'g-', label = 'Training recall')
+    plt.plot(x, df['recall_test'], 'g:', label = 'Test recall')
+    plt.plot(x, df['f1_train'], 'r-', label = 'Training F1')
+    plt.plot(x, df['f1_test'], 'r:', label = 'Test F1')
+    #plt.xticks(tick_marks, x, rotation=45)
+    plt.ylabel('Scores')
+    plt.xlabel('Hyperparameter values')
+    plt.title(title)
+    plt.legend()
+    plt.show()
+
+###########################################################
+###########################################################
+###########################################################
+###########################################################
