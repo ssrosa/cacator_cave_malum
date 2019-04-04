@@ -272,6 +272,45 @@ def plot_hypers(df, title):
     plt.show()
 
 ###########################################################
+# COMPARING SCORES ########################################
+def write_scores(df, y_train, y_hat_train, y_test, y_hat_test):
+    '''
+    Populates a DataFrame with the sores for a model. Similar to
+    classification report but shorter and tidier.
+
+    Parameters:
+    df (pd.DataFrame.) Already instantiated with its columnss.
+
+    the rest (np.array.) Targets/classes from the train/test split 
+    and from running a prediction with the model.
+
+    Returns:
+    df (pd.DataFrame.) The same df as before, now with scores!
+    '''
+    #Get scores from training and test sets
+    prec_train = precision_score(y_train, y_hat_train, average = None).mean()
+    prec_test = precision_score(y_test, y_hat_test, average = None).mean()
+    recall_train = recall_score(y_train, y_hat_train, average = None).mean()
+    recall_test =  recall_score(y_test, y_hat_test, average = None).mean()
+    f1_train = f1_score(y_train, y_hat_train, average = None).mean()
+    f1_test = f1_score(y_test, y_hat_test, average = None).mean()
+    #Append the training scores
+    df = df.append({'set': 'training',
+               'precision': prec_train,
+               'recall': recall_train,
+               'f1': f1_train,           
+              }, ignore_index = True)
+    #Append the test scores
+    df = df.append({'set': 'test',
+               'precision': prec_test,
+               'recall': recall_test,
+               'f1': f1_test              
+              }, ignore_index = True)
+    #Set index
+    df.set_index('set', inplace = True)
+    
+    return df
+
 ###########################################################
 ###########################################################
 ###########################################################
