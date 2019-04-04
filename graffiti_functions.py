@@ -10,11 +10,6 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import confusion_matrix 
 import itertools
 
-import pydotplus
-from sklearn.externals.six import StringIO  
-from IPython.display import Image  
-from sklearn.tree import export_graphviz
-
 #########################################################
 # DATA CLEANING #########################################
 def keyword_matrix(pysqldf, orig_categories, keywords):
@@ -34,7 +29,7 @@ def keyword_matrix(pysqldf, orig_categories, keywords):
     
     Parameters:
     
-    pysqldf ()
+    pysqldf () (pandasql.) Object to interpret SQL queries and to hold "globals."
 
     orig_categories (list.) The categories in the data set to traverse.
     Each should correspond to a category/class in the data set.
@@ -133,13 +128,24 @@ def write(df, words_sought, read_from, write_to, phrase, exact = False):
 
 ###########################################################
 # CONFUSION MATRIX ########################################
+
+
 def plot_conf_matrix(cm, classes, normalize=False, 
                           title='Confusion Matrix', cmap=plt.cm.Blues):
-#    if normalize:
-#        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-#        print("Matrix, normalized")
-#    else:
-#        print('Matrix')
+
+    '''
+    Draws a heat map to show true positives, false positives, &c
+    for given predicted y values vs actual y values.
+
+    Parameters:
+    cm (np.array) The confusion matrix for a model's predictions.
+
+    class (list) Names of classes/categories.
+
+    Returns:
+
+    Visualized heat map of the confusion matrix.
+    '''
 
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
@@ -190,7 +196,23 @@ def draw_graph(clf):
 # HYPERPARAMETERS #########################################
 def hyper(df, param, to_set, X_train, X_test, y_train, y_test):
     '''
-    A tool to 
+    A tool to run a model with all default hyperparameters
+    except whichever is passed to it. Called by the compare_hypers
+    function for each value of the hyperparameter.
+
+    Parameters: 
+    df (pd.DataFrame.) Empty df with columns instantiated.
+
+    param (str, int, or bool.) The value to use for the chosen hyperparameter.
+
+    to_set (string.) The hyperparameter to adjust.
+
+    X_train, &c. (arrays.) Training and test sets of features and targets.
+
+    Returns:
+    df (pd.DataFrame.) df updated with the scores for this version
+    of the model.
+
     '''
     #Instantiate a classifier with all default hyperparameters 
     #except whatever was passed  
@@ -232,7 +254,24 @@ def hyper(df, param, to_set, X_train, X_test, y_train, y_test):
 
 def compare_hypers(params, to_set, X_train, X_test, y_train, y_test):
     '''
-    A tool to
+    A tool to run a model for a set of hyperparameters. Calls hyper to run
+    each model and get its scores. Records the scores of each version of the
+    model in a df. A new row is added to the df for each value of the
+      hyperparameter.
+
+    Parameters:
+
+    params (list.) The set of values by which to adjust the chosen 
+    hyperparameter.
+
+    to_set (str.) The hyperparameter to adjust.
+
+    X_train, &c (arrays.) Training and test sets of features and targets.
+
+    Returns:
+
+    df (pd.DataFrame.) df updated with the scores for the model with
+    each value of the chosen hyperparameter.
     '''
     score_columns = ['param_values', 'prec_train', 'prec_test', 
                      'recall_train', 'recall_test', 'f1_train', 'f1_test']
@@ -249,7 +288,21 @@ def compare_hypers(params, to_set, X_train, X_test, y_train, y_test):
 
 def plot_hypers(df, title):
     '''
-    A tool to
+    A tool to visualize the scores of a model's performance at 
+    various values of a given hyperparameter. Takes the df from the
+    compare_hypers function.
+
+    Parameters:
+
+    df (pd.DataFrame) The full df of scores of the model for a given set
+    of values of a hyperparameter.
+
+    title (string.) Whatever, but hopefully the name of the chosen 
+    hyperparameter.
+
+    Returns:
+
+    Visualizes the scores from the df.
     
     '''
     # Number of iterations to plot along the x axis
@@ -276,7 +329,8 @@ def plot_hypers(df, title):
 def write_scores(df, y_train, y_hat_train, y_test, y_hat_test):
     '''
     Populates a DataFrame with the sores for a model. Similar to
-    classification report but shorter and tidier.
+    classification report but shorter and tidier. Also not the 
+    same as the compare_scores function above, so don't even.
 
     Parameters:
     df (pd.DataFrame.) Already instantiated with its columnss.
