@@ -1,105 +1,32 @@
+# CACATOR CAVE MALUM: Four Classifiers for the Beautiful, Filthy Graffiti of Pompeii
 
-# Module 3 Final Project
+Using a [data set of Pompeii graffiti by Alex Rose](https://core.tdar.org/dataset/445837/database-for-the-scratched-voices-begging-to-be-heard-the-graffiti-of-pompeii-and-today), can we build a classifier for the graffiti of Pompeii that ignores the textual content and it takes signals from data on location, number of characters, &c?
 
+# Files
 
-## Introduction
+**graffiti_slides.pdf**: A slide deck to present findings and recommendations to archeologists.
 
-In this lesson, we'll review all the guidelines and specifications for the final project for Module 3.
+**graffiti.csv**: The raw data set.
 
+**graffiti_function.py**: A script with all my code for manipulating the data and generating visualizations.
 
-## Objectives
+**images**: Illustrations of the archeological site and graffiti artefacts. 
 
-* Understand all required aspects of the Final Project for Module 3
-* Understand all required deliverables
-* Understand what constitutes a successful project
+**index.ipynb**: A Jupyter Notebook with my data exploration and analysis.
 
-## Final Project Summary
+# Methods 
+My goal was to classify graffiti without knowing its message in translation. I wanted to use the features associated with the 'site context' (a term I made up) of the graffito: its particular location in a place, on a wall, &c. My hunch was that a graffito found in a site identified as, say, a brothel, would be the same sort of lewd graffiti as all the others found in brothels. I discarded the translation column from the dataset after engineering a couple features from it: character count and presence or absence of explanation points. These seemed like the sort of reasonable signs that researchers could look for in the writing without understanding Vulgar Latin.
 
-Congratulations! You've made it through another _intense_ module, and now you're ready to show off your newfound Machine Learning skills!
+I was dissatisfied with the classes used by the creator of the dataset so I reorgnized the data into new classes that were more meaningful and balanced.
 
-<img src='smart.gif'>
+I used simple classifiers -- logistic regression and decision trees -- with significatn hyperparameter tuning but could not break 50% accuracy.
 
-All that remains for Module 3 is to complete the final project!
+Ensemble classifiers -- random forests and gradient boosting -- did slightly better but still couldn't break 50% accuracy.
 
-## The Project
+# Conclusions
 
-For this project, you're going to select a dataset of your choosing and create a classification model. You'll start by indentifying a problem you can solve with classification, and then identify a dataset. You'll then use everything you've learned about Data Science and Machine Learning thus far to source a dataset, preprocess and explore it, and then build and interpret a classification model that answers your chosen question. 
+The startling finding was that the most important features were those describing the text of the graffiti, including the character count feature I had engineered. This suggested that my hunch about the importance of the site context of a graffito was wrong: classification really did depend on knowing what the graffito said. 
 
+# Recommendations
 
-### Selecting a Data Set
-
-We encourage you to be very thoughful when identifying your problem and selecting your data set--an overscoped project goal or a poor data set can quickly bring an otherwise promising project to a grinding halt. 
-
-To help you select an appropriate data set for this project, we've set some guidelines:
-
-1. Your dataset should work for classification. The classification task can be either binary or multi-categorical, as long as it's a classification model.   
-
-2. Your dataset needs to be of sufficient complexity. Try to avoid picking an overly simple dataset. We want to see all the steps of the Data Science Process in this project--it's okay if the dataset is mostly clean, but we expect to see some preprocessing and exploration. See the following section, **_Data Set Constraints_**, for more information on this.   
-
-3. On the other end of the spectrum, don't pick a problem that's too complex, either. Stick to problems that you have a clear idea of how you can use machine learning to solve it. For now, we recommend you stay away from overly complex problems in the domains of Natural Language Processing or Computer Vision--although those domains make use of Supervised Learning, they come with a lot of other special requirements and techniques that you don't know yet (but you'll learn soon!). If you're chosen problem feels like you've overscoped, then it probably is. If you aren't sure if your problem scope is appropriate, double check with your instructor!  
-
-4. **_Serious Bonus Points_** if some or all of the data is data you have to source yourself through web scraping or interacting with a 3rd party API! Having projects that show off your ability to source data effectively make you look that much more impressive when showing your work off to potential employers!
-
-### Data Set Constraints
-
-When selecting a data set, be sure to take into the consideration the following constraints:
-
-1. Your data set can't be one we've already worked with in any labs. 
-2. Your data set should contain a minimum of 1000 rows.    
-3. Your data set should contain a minimum of 10 predictor columns, before any one-hot encoding is performed.   
-4. Your instructor must provide final approval on your data set. 
-
-### Problem First, or Data First?
-
-There are two ways that you can about getting started: **_Problem-First_** or **_Data-First_**. 
-
-**_Problem-First_**: Start with a problem that you want to solve with classification, and then try to find the data you need to solve it.  If you can't find any data to solve your problem, then you should pick another problem. 
-
-**_Data-First_**: Take a look at some of the most popular internet respositories of cool data sets we've listed below. If yuou find a data set that's particularly interesting for you, then it's totally okay to build your problem around that data set. 
-
-There are plenty of amazing places that you can get your data from. We recommend you start looking at data sets in some of these resources first:
-
-* [UCI Machine Learning Datasets Repository](https://archive.ics.uci.edu/ml/datasets.html)
-* [Kaggle Datasets](https://www.kaggle.com/datasets)
-* [Awesome Datasets Repo on Github](https://github.com/awesomedata/awesome-public-datasets)
-* [New York City Open Data Portal](https://opendata.cityofnewyork.us/)
-* [Inside AirBNB ](http://insideairbnb.com/)
-
-
-## The Deliverables
-
-Your completed should contain the following deliverables:
-
-1. A **_Jupyter Notebook_** containing any code you've written for this project.  
-
-2. A **_Blog Post_** explaining your problem/dataset, along with your process, methodology, and findings.  
-
-3. An **_"Executive Summary" PowerPoint Presentation_** that gives a brief overview of your problem/dataset, and each step of the OSEMN process. 
-
-
-
-### Jupyter Notebook Must-Haves
-
-For this project, your jupyter notebook should meet the following specifications:
-
-**_Organization/Code Cleanliness_**
-
-* The notebook should be well organized, easy to follow, and code is commented where appropriate.  
-    * Level Up: The notebook contains well-formatted, professional looking markdown cells explaining any substantial code. All functions have docstrings that act as professional-quality documentation.  
-* The notebook is written to technical audiences with a way to both understand your approach and reproduce your results. The target audience for this deliverable is other data scientists looking to validate your findings.  
-
-**_Process, Methodology, and Findings_**
-
-* Your notebook should contain a clear record of your process and methodology for exploring and preprocessing your data, building and tuning a model, and interpreting your results. 
-* We recommend you use the OSEMN process to help organize your thoughts and stay on track. 
-
-
-### Blog Post Must-Haves
-
-Your blog post should clearly explain your process and results, including:
-*  An explanation of the problem you're trying to solve and the dataset you choose for it
-* Well documented examples of code and visualizations (when appropriate)
-
-
-**_NOTE:_**  This blog post is your way of showcasing the work you've done on this project--chances are it will soon be read by a recruiter or hiring manager! Take the time to make sure that you craft your story well, and clearly explain your process and findings in a way that clearly shows both your technical expertise **_and_** your ability to communicate your results!
-
+In the nontechnical slide deck I recommend that archeologists not rely on machine learning to classify the graffiti they discover in the ongoing investigation of Pompeii: rather I recommend that they invest in training more researchers to translate Vulgar Latin.
